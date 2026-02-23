@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PapuaStore</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{background:#f5f5f5}
+
+/* NAVBAR */
+.navbar{
+background:#fff;
+padding:15px 5%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 2px 10px rgba(0,0,0,0.05);
+position:sticky;top:0;z-index:1000
+}
+.logo{font-weight:700;font-size:22px;color:#2e7d32}
+.profile img{width:42px;height:42px;border-radius:50%;cursor:pointer}
+.cart-area{display:flex;align-items:center;gap:10px}
+.checkout-btn{
+background:#2e7d32;color:#fff;border:none;
+padding:6px 12px;border-radius:8px;cursor:pointer
+}
+
+/* GRID */
+.container{padding:40px 5%}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:20px
+}
+.card{
+background:#fff;border-radius:15px;
+overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);
+transition:.2s
+}
+.card:hover{transform:translateY(-5px)}
+.card img{width:100%;height:200px;object-fit:cover}
+.card-content{padding:15px}
+.price{color:#2e7d32;font-weight:600}
+.btn{
+background:#2e7d32;color:#fff;border:none;
+padding:8px;border-radius:8px;cursor:pointer;
+width:100%;margin-top:10px
+}
+
+/* DETAIL */
+.detail-modern{
+display:grid;grid-template-columns:1fr 1fr;gap:40px
+}
+.main-img{width:100%;border-radius:20px}
+.thumbs{display:flex;gap:10px;margin-top:15px;flex-wrap:wrap}
+.thumbs img{
+width:80px;height:80px;object-fit:cover;
+border-radius:10px;cursor:pointer;
+border:2px solid transparent
+}
+.thumbs img:hover{border:2px solid #2e7d32}
+
+.variant-card{
+background:#f9f9f9;padding:15px;border-radius:15px;
+margin-top:15px
+}
+
+.review-section{
+margin-top:40px
+}
+.review-card{
+background:#fff;padding:15px;border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-bottom:15px
+}
+
+/* MODAL */
+.modal{
+position:fixed;top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,0.5);
+display:flex;justify-content:center;
+align-items:center;z-index:9999
+}
+.modal-box{
+background:#fff;padding:25px;
+border-radius:15px;width:380px;max-width:95%
+}
+
+/* FOOTER */
+.footer{
+background:#2e7d32;color:#fff;
+padding:50px 5%;margin-top:60px
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+<div class="profile" onclick="showProfile()">
+<img src="5804cbfd-6da3-41aa-87b6-efe15ece82ed.png">
+</div>
+<div class="logo">PapuaStore</div>
+<div class="cart-area">
+🛒 <span id="cartCount">0</span>
+<button class="checkout-btn" onclick="checkoutCart()">Checkout</button>
+</div>
+</div>
+
+<div class="container" id="homePage">
+<h2>Katalog Produk</h2>
+<div class="grid" id="productGrid"></div>
+</div>
+
+<div class="container" id="detailPage" style="display:none;"></div>
+
+<div class="footer">
+<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px">
+<div>
+<h2>PapuaStore</h2>
+<p>Marketplace budaya Papua yang menyediakan kerajinan asli dan berkualitas tinggi.</p>
+</div>
+<div>
+<h3>Informasi Marketplace</h3>
+<p>Alamat: Manokwari - Papua Barat</p>
+<p>No HP: 081234567890</p>
+<p>Email: PapuaStoremkw@gmail.com</p>
+</div>
+<div>
+<h3>Layanan</h3>
+<p>Pengiriman Seluruh Indonesia</p>
+<p>Pembayaran Aman</p>
+<p>Produk Asli Papua</p>
+</div>
+</div>
+<hr style="margin:30px 0;border:0;height:1px;background:rgba(255,255,255,0.3)">
+<p style="text-align:center">© 2026 PapuaStore</p>
+</div>
+
+<script>
+function generateReviews(){
+return [
+{name:"Ivan",rating:5,comment:"Detail bagus",reply:"Terima kasih sudah membeli 🙏"},
+{name:"Rina",rating:4,comment:"Pengiriman cepat",reply:"Kami selalu berusaha cepat 😊"},
+{name:"Dodi",rating:5,comment:"Kualitas mantap",reply:"Senang mendengarnya!"},
+{name:"Ayu",rating:5,comment:"Sangat puas",reply:"Terima kasih atas dukungannya"},
+{name:"Budi",rating:4,comment:"Bagus sesuai foto",reply:"Produk asli Papua 👍"},
+{name:"Sinta",rating:5,comment:"Rekomended!",reply:"Terima kasih 🙏"},
+{name:"Rafael",rating:4,comment:"Lumayan bagus",reply:"Terima kasih sudah percaya"},
+{name:"Nina",rating:5,comment:"Top banget!",reply:"Kami tunggu order berikutnya 😊"}
+];
+}
+
+const products = [
+{
+id:1,
+name:"Noken",
+filosofi:"Tas tradisional khas Papua yang melambangkan kehidupan dan kerja keras masyarakat Papua.",
+bahan:" Bahan baku noken yang terbuat dari serat kulit kayu, serat pohon, atau anggrek hutan ",
+ukuran:"Kecil - Besar", 
+variants:[
+{model:"Kecil",price:100000,image:"68f1921e-4bfc-40df-b330-7a712b223d9a.png"},
+{model:"Besar",price:150000,image:"549ec4fd-f381-4685-b80b-76222376ccce.png"}
+],
+reviews:generateReviews()
+},
+{
+id:2,
+name:"Pakaian Adat Suku Asmat",
+filosofi:"simbol mendalam yang merepresentasikan keselarasan hidup manusia dengan alam, penghormatan kepada leluhur, serta penanda status sosial.",
+bahan:"daun sagu kering, serat kulit kayu, dan bulu burung kasuari",
+ukuran:"costum",
+variants:[
+{model:"Kecil",price:600000,image:"cover-asmat.jpg"},
+{model:"Besar",price:750000,image:"asmatI.jpg"}
+],
+reviews:generateReviews()
+},
+{
+id:3,
+name:"Topeng Asmat",
+filosofi:"penghormatan mendalam terhadap roh nenek moyang, berfungsi sebagai perantara magis antara dunia manusia dan arwah.",
+bahan:"Kayu mangrove atau kayu",
+ukuran:"20-50 cm",
+variants:[
+{model:"20-35 cm",price:380000,image:"cover-topeng.jpg"},
+{model:"40-50 cm",price:450000,image:"topengI.jpg"}
+],
+reviews:generateReviews()
+},
+{
+id:4,
+name:"Mahkota Papua",
+filosofi:"Hiasan kepala tradisional simbol kehormatan, keindahan alam, dan identitas budaya masyarakat Papua, umumnya terbuat dari bulu burung Cenderawasih atau Kasuari.",
+bahan:"bulu kasuari, bulu cendrawasih, anyaman kulit kayu.",
+ukuran:"costum",
+variants:[
+{model:"Bulu Cendrawasih/kaswari",price:500000,image:"57562638-eb79-4112-9544-0fcb8cf3489e.png"},
+{model:"Bulu Ayam",price:650000,image:"i28f96fb0-ee5a-44d1-b34a-b4e49ade6438.png"}
+],
+reviews:generateReviews()
+},
+{
+id:5,
+name:"Manik-Manik Papua",
+filosofi:"sebagai simbol status sosial, kekayaan, dan kehormatan, sekaligus penolak bala dalam tradisi spiritual.",
+bahan:"manik-manik, biji-bijian, kerang, tulang",
+ukuran:"Custom",
+variants:[
+{model:"Kalung",price:150000,image:"3a90df06-8137-4fdc-b001-23ac63e869cc.png"},
+{model:"Gelang",price:180000,image:"8b545762-074b-4e33-8411-e46d7c67b070.png"},
+],
+reviews:generateReviews()
+}
+];
+
+let cart=[];
+let currentProduct=null;
+let selectedVariant=null;
+
+function renderProducts(){
+let grid=document.getElementById("productGrid");
+grid.innerHTML="";
+products.forEach(p=>{
+let total=p.reviews.reduce((a,b)=>a+b.rating,0);
+let avg=(total/p.reviews.length).toFixed(1);
+grid.innerHTML+=`
+<div class="card">
+<img src="${p.variants[0].image}">
+<div class="card-content">
+<h4>${p.name}</h4>
+<p style="color:gold">⭐ ${avg} (${p.reviews.length})</p>
+<p class="price">Mulai Rp ${p.variants[0].price.toLocaleString()}</p>
+<button class="btn" onclick="openDetail(${p.id})">Lihat Detail</button>
+</div>
+</div>
+`;
+});
+}
+renderProducts();
+
+function openDetail(id){
+currentProduct=products.find(p=>p.id===id);
+document.getElementById("homePage").style.display="none";
+let detail=document.getElementById("detailPage");
+detail.style.display="block";
+
+let variantHTML=currentProduct.variants.map((v,i)=>`
+<div class="variant-card">
+<b>${v.model}</b><br>
+Harga: Rp ${v.price.toLocaleString()}<br>
+<button class="btn" onclick="selectVariant(${i})">Pilih</button>
+</div>
+`).join("");
+
+let reviewHTML=currentProduct.reviews.map((r,index)=>`
+<div class="review-card">
+<b>${r.name}</b> ⭐${r.rating}<br>
+${r.comment}<br>
+<i>Balasan: ${r.reply}</i>
+</div>
+`).join("");
+
+detail.innerHTML=`
+<button onclick="goBack()">← Kembali</button>
+
+<div class="detail-modern">
+<div>
+<img src="${currentProduct.variants[0].image}" class="main-img">
+</div>
+<div>
+<h2>${currentProduct.name}</h2>
+<p><b>Filosofi:</b> ${currentProduct.filosofi}</p>
+<p><b>Bahan:</b> ${currentProduct.bahan}</p>
+<p><b>Ukuran:</b> ${currentProduct.ukuran}</p>
+<h3>Pilih Varian</h3>
+${variantHTML}
+</div>
+</div>
+
+<h3>Ulasan Pembeli</h3>
+<div class="review-section">${reviewHTML}</div>
+
+<h4>Tambah Ulasan</h4>
+<select id="rating">
+<option value="5">5</option>
+<option value="4">4</option>
+<option value="3">3</option>
+<option value="2">2</option>
+<option value="1">1</option>
+</select>
+<textarea id="comment" style="width:100%;margin-top:10px"></textarea>
+<button class="btn" onclick="addReview()">Kirim</button>
+`;
+}
+
+function selectVariant(index){
+selectedVariant=currentProduct.variants[index];
+showPaymentModal();
+}
+
+function showPaymentModal(){
+let modal=document.createElement("div");
+modal.className="modal";
+modal.innerHTML=`
+<div class="modal-box">
+<h3>Metode Pembayaran</h3>
+<select id="payment">
+<option>Transfer Bank</option>
+<option>COD</option>
+<option>E-Wallet</option>
+</select>
+<button class="btn" onclick="processOrder()">Bayar</button>
+</div>
+`;
+document.body.appendChild(modal);
+}
+
+function processOrder(){
+let method=document.getElementById("payment").value;
+let invoiceNumber="INV"+Date.now();
+
+cart.push({
+product:currentProduct.name,
+variant:selectedVariant.model,
+price:selectedVariant.price,
+method:method,
+invoice:invoiceNumber
+});
+
+document.getElementById("cartCount").innerText=cart.length;
+
+document.querySelector(".modal").remove();
+
+showInvoice(invoiceNumber,method);
+}
+
+function showInvoice(inv,method){
+alert(
+"INVOICE\n"+
+"Nomor: "+inv+"\n"+
+"Produk: "+currentProduct.name+"\n"+
+"Varian: "+selectedVariant.model+"\n"+
+"Harga: Rp "+selectedVariant.price.toLocaleString()+"\n"+
+"Metode: "+method+"\n\n"+
+"Terima kasih telah berbelanja di PapuaStore!"
+);
+}
+
+function checkoutCart(){
+if(cart.length===0){alert("Keranjang kosong!");return;}
+alert("Checkout berhasil 🎉");
+cart=[];
+document.getElementById("cartCount").innerText=0;
+}
+
+function addReview(){
+let rating=document.getElementById("rating").value;
+let comment=document.getElementById("comment").value;
+if(comment===""){alert("Isi komentar!");return;}
+currentProduct.reviews.unshift({
+name:"Anda",
+rating:parseInt(rating),
+comment:comment,
+reply:"Terima kasih atas ulasannya 🙏"
+});
+openDetail(currentProduct.id);
+renderProducts();
+}
+
+function goBack(){
+document.getElementById("homePage").style.display="block";
+document.getElementById("detailPage").style.display="none";
+}
+
+function showProfile(){
+alert("PapuaStore\nYusri Ramadhan\nXII TKJ");
+}
+</script>
+</body>
+</html>
